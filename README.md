@@ -24,6 +24,7 @@
  |group_recall_event|[HTTP群消息撤回]|user_id\|operator_id\|message_id\|group_id|
  |friend_recall_event|[HTTP好友消息撤回]|user_id\|operator_id\|message_id\|0|
  |essence_event|[HTTP精华消息]|sender_id\|operator_id\|message_id\|sub_type|
+ |group_upload_event|[HTTP文件上传]|user_id\|file\|group_id|
  |exit_event|[HTTPws断开]|timestamp|
 
  # 注意事项

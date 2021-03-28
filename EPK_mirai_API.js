@@ -66,11 +66,22 @@ function essence_event(data){
     return;
 };
 
+//群文件上传事件
+function group_upload_event(data){
+    queststr = data.user_id + "|" + data.file + "|" +data.group_id;
+    request(uploadurl + "/?msg=" + urlencode("[HTTP文件上传]"+queststr),function (error, response, body){
+    });
+    console.log("已发送文件上传消息(" + queststr + ")");
+    return;
+;}
+
+
 function client_status_event(data){
     //客户端状态变更
 
 };
 
+//ws断开事件
 function exit_event(){
     queststr = new Date().getTime();
     request(uploadurl + "/?msg=" + urlencode("[HTTPws断开]") + queststr,function (error, response, body){
@@ -108,6 +119,9 @@ ws.onmessage = function (e) {
                                 //群荣耀事件
                                 honor_event(data);
                                 break;
+                            case "group_upload":
+                                //群文件上传事件
+                                group_upload_event(data);
                             default:
                         }
                         break;
