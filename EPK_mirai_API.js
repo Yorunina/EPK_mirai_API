@@ -10,89 +10,95 @@ var ws = new WebSocket('ws://0.0.0.0:6700');
 var uploadurl = "http://localhost:8000";
 //创建一个websocket链接
 
-//戳一戳事件
+function common_recall(type,data){
+    request(uploadurl + "/?msg=" + urlencode(type + JSON.stringify(data)), function (error, response, body){
+        if(error){
+            console.log("遇到错误！ "+error);
+    }
+        else{
+            console.log("已发送" + type + "消息");
+        };
+    });
+    return;
+}
+
+
 function poke_event(data){
-    group_id = data.group_id ? data.group_id : "0";
-    queststr = data.user_id + "|" + data.target_id + "|" + group_id;
-    request(uploadurl + "/?msg=" + urlencode("[HTTP戳一戳]" + queststr), function (error, response, body){
-    });
-    console.log("已发送戳一戳消息(" + queststr + ")");
+    common_recall("[HTTP戳一戳]",data);
     return;
 };
-
-//运气王事件
 function lucky_king_event(data){
-    queststr = data.user_id + "|" + data.target_id + "|" + data.group_id;
-    request(uploadurl + "/?msg=" + urlencode("[HTTP运气王]"+queststr),function (error, response, body){
-    });
-    console.log("已发送运气王消息(" + queststr + ")");
+    common_recall("[HTTP运气王]",data);
     return;
 };
-
-//群荣耀变更事件
 function honor_event(data){
-    queststr = data.user_id + "|" + data.honor_type + "|" + data.group_id
-    request(uploadurl + "/?msg=" + urlencode("[HTTP群荣耀变更]"+queststr),function (error, response, body){
-    });
-    console.log("已发送群荣耀变更消息(" + queststr + ")");
+    common_recall("[HTTP群荣耀变更]",data);
     return;
 };
-
-//群撤回事件
-function group_recall_event(data){
-    queststr = data.user_id + "|" + data.operator_id + "|" + data.message_id + "|" + data.group_id;
-    request(uploadurl + "/?msg=" + urlencode("[HTTP群消息撤回]"+queststr),function (error, response, body){
-    });
-    console.log("已发送群撤回消息(" + queststr + ")");
-    return;
-};
-
-//好友撤回事件
-function friend_recall_event(data){
-    queststr = data.user_id + "|" + data.user_id + "|" + data.message_id + "|0";
-    request(uploadurl + "/?msg=" + urlencode("[HTTP好友消息撤回]"+queststr),function (error, response, body){
-    });
-    console.log("已发送好友撤回消息(" + queststr + ")");
-    return;
-};
-
-//精华消息事件
-function essence_event(data){
-    //测试类别
-    queststr = data.sender_id + "|" + data.operator_id + "|" + data.message_id + "|" +data.sub_type;
-    request(uploadurl + "/?msg=" + urlencode("[HTTP精华消息]"+queststr),function (error, response, body){
-    });
-    console.log("已发送精华消息(" + queststr + ")");
-    return;
-};
-
-//群文件上传事件
 function group_upload_event(data){
-    queststr = data.user_id + "|" + data.file + "|" +data.group_id;
-    request(uploadurl + "/?msg=" + urlencode("[HTTP文件上传]"+queststr),function (error, response, body){
-    });
-    console.log("已发送文件上传消息(" + queststr + ")");
+    common_recall("[HTTP文件上传]",data);
     return;
-;}
-
-
-function client_status_event(data){
-    //客户端状态变更
-
 };
-
-//ws断开事件
+function group_admin_event(data){
+    common_recall("[HTTP管理变更]",data);
+    return;
+};
+function group_decrease_event(data){
+    common_recall("[HTTP群成员减少]",data);
+    return;
+};
+function group_increase_event(data){
+    common_recall("[HTTP群成员增加]",data);
+    return;
+};
+function group_ban_event(data){
+    common_recall("[HTTP群禁言]",data);
+    return;
+};
+function friend_add_event(data){
+    common_recall("[HTTP好友添加]",data);
+    return;
+};
+function group_recall_event(data){
+    common_recall("[HTTP群消息撤回]",data);
+    return;
+};
+function friend_recall_event(data){
+    common_recall("[HTTP好友消息撤回]",data);
+    return;
+};
+function group_card_event(data){
+    common_recall("[HTTP成员名片更新]",data);
+    return;
+};
+function offline_file_event(data){
+    common_recall("[HTTP接收离线文件]",data);
+    return;
+};
+function friend_event(data){
+    common_recall("[HTTP加好友请求]",data);
+    return;
+};
+function group_event(data){
+    common_recall("[HTTP加群请求]",data);
+    return;
+}
+function client_status_event(data){
+    common_recall("[HTTP客户端在线状态变更]",data);
+    return;
+};
+function essence_event(data){
+    common_recall("[HTTP精华消息]",data);
+    return;
+};
 function exit_event(){
-    queststr = new Date().getTime();
-    request(uploadurl + "/?msg=" + urlencode("[HTTPws断开]") + queststr,function (error, response, body){
-    });
-    console.log("已发送ws断开信息(" + queststr + ")")
+    common_recall("[HTTPws断开]",data);
     return;
 };
 
 //定义链接建立时的动作
 ws.onopen = function (e) {
-    console.log("与go-cqhttp正向ws接触成功！");
+    common_recall("[HTTPws成功接触]","");
 };
 
 //主消息事件处理序列
@@ -108,7 +114,7 @@ ws.onmessage = function (e) {
                     case "notify":
                         switch (data.sub_type){
                             case "poke":
-                                //戳一戳事件
+                                //戳一戳事件，包含好友和群戳一戳
                                 poke_event(data);
                                 break;
                             case "lucky_king":
@@ -119,11 +125,32 @@ ws.onmessage = function (e) {
                                 //群荣耀事件
                                 honor_event(data);
                                 break;
-                            case "group_upload":
-                                //群文件上传事件
-                                group_upload_event(data);
                             default:
                         }
+                        break;
+                    case "group_upload":
+                        //群文件上传事件
+                        group_upload_event(data);
+                        break;
+                    case "group_admin":
+                        //群管理员变动
+                        group_admin_event(data);
+                        break;
+                    case "group_decrease":
+                        //群成员减少事件
+                        group_decrease_event(data);
+                        break;
+                    case "group_increase":
+                        //群成员增加事件
+                        group_increase_event(data);
+                        break;
+                    case "group_ban":
+                        //群禁言事件
+                        group_ban_event(data);
+                        break;
+                    case "friend_add":
+                        //好友添加事件，包含主动添加
+                        friend_add_event(data);
                         break;
                     case "group_recall":
                         //群撤回事件
@@ -132,6 +159,14 @@ ws.onmessage = function (e) {
                     case "friend_recall":
                         //好友撤回事件
                         friend_recall_event(data);
+                        break;
+                    case "group_card":
+                        //群成员名片更新
+                        group_card_event(data);
+                        break;
+                    case "offline_file":
+                        //收到离线文件
+                        offline_file_event(data);
                         break;
                     case "essence":
                         //精华消息事件
@@ -144,7 +179,19 @@ ws.onmessage = function (e) {
                     default:
                 }
             break;
-			default:
+			case "request":
+                switch (data.request_type){
+                    case "friend":
+                        //加好友请求，此为被动接收到的请求，包含flag参数
+                        friend_event(data);
+                        break;
+                    case "group":
+                        //加群请求/邀请
+                        group_event(data);
+                        break;
+                    default:
+                }
+            default:
         }
     }
 

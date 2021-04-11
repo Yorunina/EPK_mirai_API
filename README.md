@@ -15,17 +15,13 @@
   * 在完成上文的设置之后，你需要先打开GO-CQHTTP和XQ双框架，之后双击本项目中的start.bat完成对node.js的启动。
   * 在启动之后，本项目会链接GO-CQHTTP的ws，并且将接收到的事件转发至EPK的监听端口。
   * 在GO-CQHTTP服务断开的情况下，本项目会根据bat中设置的时间进行重连（20s）。
-# 事件对应列表
- |事件名称|EPK事件|传入数据格式|
- |---|---|---|
- |poke_event|[HTTP戳一戳]|user_id\|target_id\|group_id|
- |lucky_king_event|[HTTP运气王]|user_id\|target_id\|group_id|
- |honor_event|[HTTP群荣耀变更]|user_id\|honor_type\|group_id|
- |group_recall_event|[HTTP群消息撤回]|user_id\|operator_id\|message_id\|group_id|
- |friend_recall_event|[HTTP好友消息撤回]|user_id\|operator_id\|message_id\|0|
- |essence_event|[HTTP精华消息]|sender_id\|operator_id\|message_id\|sub_type|
- |group_upload_event|[HTTP文件上传]|user_id\|file\|group_id|
- |exit_event|[HTTPws断开]|timestamp|
-
  # 注意事项
  请注意，在这里发出的所有事件，铃心接收到之后会视为是**来自于私聊**并且**无发送者QQ**的**无源消息**！请不要通过常规方式进行回复！回复请额外调用【输出流】或者dll乃至通过GO-CQHTTP直接发送消息。否则将无法正常回复！
+
+**本系统转接消息发送的格式一般为：[HTTP消息类别]消息数据**
+ 
+如对接收到的“私聊戳一戳消息”：
+
+````[HTTP戳一戳]{"notice_type":"notify","post_type":"notice","self_id":1207644216,"sender_id":836193631,"sub_type":"poke","target_id":1207644216,"time":1618115758,"user_id":836193631}````
+
+对于不同的消息内容，可以参考[GO-CQHTTP](https://github.com/Mrs4s/go-cqhttp)的文档，或者自行通过事件输出Json消息自行分析。
