@@ -92,13 +92,13 @@ function essence_event(data){
     return;
 };
 function exit_event(){
-    common_recall("[HTTPws断开]",data);
+    common_recall("[HTTPws断开]",);
     return;
 };
 
 //定义链接建立时的动作
 ws.onopen = function (e) {
-    common_recall("[HTTPws成功接触]","");
+    common_recall("[HTTPws成功接触]",);
 };
 
 //主消息事件处理序列
@@ -194,11 +194,9 @@ ws.onmessage = function (e) {
             default:
         }
     }
-
 };
 
 ws.onerror = function (e) {
-    console.log("error：" + e);
 };
 
 ws.onclose = function (e) {
