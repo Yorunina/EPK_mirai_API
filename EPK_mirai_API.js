@@ -1,10 +1,6 @@
 var WebSocket = require('ws');
-var zlib = require('zlib');
-var fs = require('fs');
-var http=require('http');
 var request=require('request');
 var urlencode = require('urlencode');
-const { time, timeStamp } = require('console');
 //执行包导入
 var ws = new WebSocket('ws://0.0.0.0:6700');
 var uploadurl = "http://localhost:8000";
