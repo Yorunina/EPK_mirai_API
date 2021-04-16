@@ -7,12 +7,14 @@ var uploadurl = "http://localhost:8000";
 //创建一个websocket链接
 
 function common_recall(type,data){
-    request(uploadurl + "/?msg=" + urlencode(type + JSON.stringify(data)), function (error, response, body){
+    let group_id = data.group_id ? data.group_id : 0;
+    let user_id = data.user_id ? data.user_id : 0;
+    request(uploadurl + "/?msg=" + urlencode(type + JSON.stringify(data)) + "&fromQQ=" + user_id +"&fromGroup=" + group_id, function (error, response, body){
         if(error){
             console.log("遇到错误！ "+error);
     }
         else{
-            console.log("已发送" + type + "消息");
+            console.log("已发送来源于[" + group_id + "," + user_id + "]的" + type + "消息");
         };
     });
     return;
@@ -88,13 +90,27 @@ function essence_event(data){
     return;
 };
 function exit_event(){
-    common_recall("[HTTPws断开]",);
+    request(uploadurl + "/?msg=" + urlencode("[HTTPws断开]"), function (error, response, body){
+        if(error){
+            console.log("遇到错误！ "+error);
+    }
+        else{
+            console.log("已发送[HTTPws断开]消息");
+        };
+    });
     return;
 };
 
 //定义链接建立时的动作
 ws.onopen = function (e) {
-    common_recall("[HTTPws成功接触]",);
+    request(uploadurl + "/?msg=" + urlencode("[HTTPws成功接触]"), function (error, response, body){
+        if(error){
+            console.log("遇到错误！ "+error);
+    }
+        else{
+            console.log("已发送[HTTPws成功接触]消息");
+        };
+    });
 };
 
 //主消息事件处理序列
